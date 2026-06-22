@@ -1,7 +1,7 @@
 {
-  "name": "家教排課與上課狀況管理",
+  "name": "家教排課 App",
   "short_name": "家教排課",
-  "description": "安排學生上課時間、地點與上課狀況紀錄的家教管理 App。",
+  "description": "管理學生、排課、地點、上課狀況、週/月排程、行事曆提醒、家長提醒訊息與學生量表。",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -9,7 +9,7 @@
   "theme_color": "#8a6f55",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }

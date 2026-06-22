@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>家教排課與上課狀況管理</title>
+  <title>家教排課 App</title>
   <meta name="theme-color" content="#8a6f55" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="家教排課" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="icon" type="image/png" href="icon-192.png" />
   <style>
     :root {
       --bg: #f7f4ef;
@@ -25,86 +25,61 @@
       --ok: #4e8562;
       --warn: #b18b36;
       --blue: #537895;
+      --purple: #7a5d8f;
       --shadow: 0 10px 28px rgba(62, 45, 31, 0.10);
       --radius: 18px;
     }
     * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", sans-serif;
       background: linear-gradient(180deg, #faf8f5 0%, var(--bg) 100%);
       color: var(--ink);
-      padding-bottom: env(safe-area-inset-bottom);
+      padding-bottom: calc(24px + env(safe-area-inset-bottom));
     }
-    header {
-      padding: 28px 18px 16px;
-      max-width: 1180px;
-      margin: 0 auto;
-    }
-    header h1 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 38px); letter-spacing: 0.5px; }
+    header { padding: 26px 18px 14px; max-width: 1180px; margin: 0 auto; }
+    header h1 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 38px); letter-spacing: .5px; }
     header p { margin: 0; color: var(--muted); line-height: 1.6; }
     .app-hint { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--line); background: #fffdfb; border-radius: 14px; color: var(--muted); font-size: 13px; line-height: 1.5; }
     @media all and (display-mode: standalone) { .app-hint { display: none; } }
     .wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px 40px; }
-    .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 18px; }
+    .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 18px; position: sticky; top: 0; z-index: 5; padding: 8px 0; background: rgba(247,244,239,.92); backdrop-filter: blur(8px); }
     .tab-btn, button, .file-label {
-      border: 0;
-      background: var(--soft);
-      color: var(--ink);
-      padding: 10px 14px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 650;
-      font-size: 14px;
-      transition: .15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
+      border: 0; background: var(--soft); color: var(--ink); padding: 10px 14px; border-radius: 999px; cursor: pointer;
+      font-weight: 650; font-size: 14px; transition: .15s ease; display: inline-flex; align-items: center; gap: 7px; text-decoration: none;
     }
     .tab-btn.active, button.primary { background: var(--main); color: #fff; }
-    button:hover, .tab-btn:hover, .file-label:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(74, 52, 31, .12); }
+    button:hover, .tab-btn:hover, .file-label:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(74,52,31,.12); }
     button.danger { background: #f1d8d8; color: #8f3131; }
     button.ghost { background: #f6f1eb; color: var(--main-dark); }
+    button:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
     .panel { display: none; }
     .panel.active { display: block; }
-    .grid { display: grid; grid-template-columns: 380px 1fr; gap: 18px; align-items: start; }
+    .grid { display: grid; grid-template-columns: 390px 1fr; gap: 18px; align-items: start; }
     .grid.dashboard { grid-template-columns: 1fr; }
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
     .card h2, .card h3 { margin: 0 0 14px; }
     .card h2 { font-size: 20px; }
     .card h3 { font-size: 17px; }
+    .subhead { color: var(--main-dark); font-weight: 800; margin: 18px 0 8px; padding-top: 12px; border-top: 1px dashed var(--line); }
     label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 6px; font-weight: 650; }
     input, select, textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px 11px;
-      font-size: 15px;
-      background: #fffdfb;
-      color: var(--ink);
-      outline: none;
+      width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 10px 11px; font-size: 15px;
+      background: #fffdfb; color: var(--ink); outline: none;
     }
     textarea { min-height: 86px; resize: vertical; line-height: 1.5; }
-    input:focus, select:focus, textarea:focus { border-color: var(--main); box-shadow: 0 0 0 3px rgba(138, 111, 85, .12); }
+    input:focus, select:focus, textarea:focus { border-color: var(--main); box-shadow: 0 0 0 3px rgba(138,111,85,.12); }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-    @media (max-width: 540px) { .row, .row3 { grid-template-columns: 1fr; } }
+    .row4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    @media (max-width: 720px) { .row3, .row4 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 540px) { .row, .row3, .row4 { grid-template-columns: 1fr; } }
     .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     .muted { color: var(--muted); font-size: 13px; line-height: 1.5; }
     .list { display: grid; gap: 10px; }
-    .item {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 13px;
-      background: #fffdfb;
-    }
+    .item { border: 1px solid var(--line); border-radius: 16px; padding: 13px; background: #fffdfb; }
     .item-top { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
     .item-title { font-weight: 750; font-size: 16px; }
     .item-sub { color: var(--muted); font-size: 13px; line-height: 1.6; margin-top: 3px; }
@@ -114,13 +89,17 @@
     .badge.plan { background: #e0ebf2; color: var(--blue); }
     .badge.cancel { background: #f4dfdf; color: var(--danger); }
     .badge.makeup { background: #f7ecd0; color: var(--warn); }
-    .badge.missed { background: #ead7ef; color: #7a4c86; }
+    .badge.missed { background: #ead7ef; color: var(--purple); }
+    .badge.risk-low { background:#dcf0e3; color:var(--ok); }
+    .badge.risk-mid { background:#f7ecd0; color:var(--warn); }
+    .badge.risk-high { background:#f4dfdf; color:var(--danger); }
     .item-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
     .filters { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
     @media (max-width: 850px) { .filters { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 520px) { .filters { grid-template-columns: 1fr; } }
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
-    @media (max-width: 850px) { .stats { grid-template-columns: 1fr 1fr; } }
+    .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 18px; }
+    @media (max-width: 960px) { .stats { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 420px) { .stats { grid-template-columns: 1fr; } }
     .stat { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; box-shadow: var(--shadow); }
     .stat .num { font-size: 28px; font-weight: 800; }
     .stat .label { color: var(--muted); font-size: 13px; margin-top: 2px; }
@@ -135,19 +114,47 @@
     th, td { border-bottom: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; font-size: 14px; }
     th { background: #f6f1eb; color: var(--main-dark); }
     .small-btn { padding: 7px 10px; font-size: 12px; }
+    .schedule-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+    @media (max-width: 1000px) { .schedule-grid { grid-template-columns: 1fr; } }
+    .month-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+    .month-head { text-align: center; font-weight: 800; color: var(--main-dark); font-size: 13px; padding: 8px 0; }
+    .month-day { min-height: 118px; border: 1px solid var(--line); background:#fffdfb; border-radius: 14px; padding: 8px; overflow: hidden; }
+    .month-day.empty { background: transparent; border: 1px dashed transparent; box-shadow: none; }
+    .month-day.today { background:#fff6e4; border-color:#f0d8a3; }
+    .month-date { font-weight: 800; color: var(--main-dark); margin-bottom: 6px; display:flex; justify-content:space-between; gap:4px; font-size: 13px; }
+    .month-chip { border-left: 3px solid var(--main); background:#fff; border-radius:10px; padding:6px 7px; margin:6px 0; box-shadow:0 3px 10px rgba(74,52,31,.07); font-size:12px; line-height:1.35; }
+    @media (max-width: 720px) { .month-grid { grid-template-columns: repeat(7, minmax(38px, 1fr)); gap: 4px; } .month-day { min-height: 86px; padding: 5px; border-radius: 10px; } .month-head { font-size: 11px; } .month-chip { font-size: 10px; padding: 4px; } .month-chip .hide-small { display:none; } }
+    .message-preview { min-height: 150px; background:#fffdfb; }
+    .day-card { min-height: 160px; border: 1px solid var(--line); background:#fffdfb; border-radius: 16px; padding: 10px; }
+    .day-title { font-weight: 800; color: var(--main-dark); margin-bottom: 8px; display: flex; justify-content: space-between; gap: 8px; }
+    .day-today { background:#fff6e4; border-color:#f0d8a3; }
+    .lesson-chip { border-left: 4px solid var(--main); background:#fff; border-radius:12px; padding:8px 9px; margin:8px 0; box-shadow:0 4px 12px rgba(74,52,31,.08); font-size:13px; line-height:1.45; }
+    .lesson-chip strong { font-size: 14px; }
+    .scale-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px; }
+    .scale-mini div { background:#f8f4ee; border:1px solid var(--line); border-radius:10px; padding:6px 8px; font-size:12px; color:var(--muted); }
+    .print-only { display: none; }
+    @media print {
+      body { background: #fff; color:#111; }
+      header, .tabs, .no-print, button, .actions { display:none !important; }
+      .wrap { max-width: none; padding:0; }
+      .panel { display:block; }
+      .card { box-shadow:none; border:0; padding:0; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>家教排課與上課狀況管理</h1>
-    <p>管理學生資料、上課時間、地點、課程狀態、作業完成度、考試狀況與下一次教學方向。資料會存在目前這個瀏覽器，可另外匯出備份。</p>
+    <h1>家教排課 App</h1>
+    <p>管理每位學生的上課時間、地點、上課狀況、提醒、週/月排程、家長提醒、上課狀況留言與學生量表。資料存在目前瀏覽器，建議定期匯出備份。</p>
+    <div class="app-hint">iPhone/iPad 可用 Safari 分享按鈕 →「加入主畫面」。若要提醒，建議用「加入行事曆」匯出 .ics，讓系統行事曆提醒。</div>
   </header>
 
   <main class="wrap">
-    <nav class="tabs">
+    <nav class="tabs no-print">
       <button class="tab-btn active" data-tab="dashboard">總覽</button>
       <button class="tab-btn" data-tab="students">學生資料</button>
-      <button class="tab-btn" data-tab="lessons">排課 / 上課紀錄</button>
+      <button class="tab-btn" data-tab="lessons">排課 / 紀錄</button>
+      <button class="tab-btn" data-tab="schedule">排程表</button>
       <button class="tab-btn" data-tab="backup">匯出 / 匯入</button>
     </nav>
 
@@ -157,14 +164,25 @@
         <div class="stat"><div class="num" id="statUpcoming">0</div><div class="label">未來課程</div></div>
         <div class="stat"><div class="num" id="statDoneMonth">0</div><div class="label">本月已完成</div></div>
         <div class="stat"><div class="num" id="statNeedFollow">0</div><div class="label">需追蹤狀況</div></div>
+        <div class="stat"><div class="num" id="statHighRisk">0</div><div class="label">量表高風險</div></div>
       </div>
       <div class="grid dashboard">
         <div class="card">
           <div class="toolbar">
             <h2>近期課程</h2>
-            <button class="primary" onclick="switchTab('lessons')">新增排課</button>
+            <div class="actions" style="margin-top:0">
+              <button onclick="switchTab('schedule')">看排程表</button>
+              <button class="primary" onclick="switchTab('lessons')">新增排課</button>
+            </div>
           </div>
           <div id="dashboardLessons" class="list"></div>
+        </div>
+        <div class="card" style="margin-top:18px">
+          <div class="toolbar">
+            <h2>學生量表提醒</h2>
+            <button onclick="printPDF('scale')">匯出量表 PDF</button>
+          </div>
+          <div id="dashboardScale" class="list"></div>
         </div>
       </div>
     </section>
@@ -177,46 +195,63 @@
           <label>學生姓名</label>
           <input id="studentName" placeholder="例如：小明" />
           <div class="row">
-            <div>
-              <label>年級</label>
-              <input id="studentGrade" placeholder="例如：國二 / 高一" />
-            </div>
-            <div>
-              <label>科目</label>
-              <input id="studentSubject" placeholder="例如：數學 / 理化" />
-            </div>
+            <div><label>年級</label><input id="studentGrade" placeholder="例如：國二 / 高一" /></div>
+            <div><label>科目</label><input id="studentSubject" placeholder="例如：數學 / 理化" /></div>
           </div>
           <label>聯絡方式</label>
           <input id="studentContact" placeholder="家長電話、Line、Email，可留空" />
           <label>預設上課地點</label>
           <input id="studentLocation" placeholder="例如：學生家 / 線上 / 圖書館" />
           <div class="row">
-            <div>
-              <label>收費方式</label>
-              <input id="studentRate" placeholder="例如：700/hr，可留空" />
-            </div>
-            <div>
-              <label>學生狀態</label>
-              <select id="studentStatus">
-                <option value="正常上課">正常上課</option>
-                <option value="觀察中">觀察中</option>
-                <option value="暫停">暫停</option>
-                <option value="結束">結束</option>
-              </select>
-            </div>
+            <div><label>收費方式</label><input id="studentRate" placeholder="例如：700/hr，可留空" /></div>
+            <div><label>學生狀態</label><select id="studentStatus"><option value="正常上課">正常上課</option><option value="觀察中">觀察中</option><option value="暫停">暫停</option><option value="結束">結束</option></select></div>
           </div>
           <label>學生狀況備註</label>
-          <textarea id="studentNote" placeholder="例如：大考容易粗心、需要多練題、家長希望追蹤作業完成度"></textarea>
+          <textarea id="studentNote" placeholder="例如：小考可以，大考掉分；老師帶著做可以，自己寫容易卡住；回家練習偏少"></textarea>
+
+          <div class="subhead">學生量表（老師選單評量）</div>
+          <div class="row">
+            <div><label>回家練習量</label><select id="scalePractice"></select></div>
+            <div><label>作業品質</label><select id="scaleHomework"></select></div>
+          </div>
+          <div class="row">
+            <div><label>獨立解題能力</label><select id="scaleIndependent"></select></div>
+            <div><label>大考穩定度</label><select id="scaleExam"></select></div>
+          </div>
+          <div class="row">
+            <div><label>概念理解</label><select id="scaleConcept"></select></div>
+            <div><label>題意理解</label><select id="scaleReading"></select></div>
+          </div>
+          <div class="row">
+            <div><label>專注度</label><select id="scaleFocus"></select></div>
+            <div><label>學習信心 / 態度</label><select id="scaleConfidence"></select></div>
+          </div>
+          <label>整體風險判斷</label>
+          <select id="scaleRisk"><option value="穩定">穩定</option><option value="觀察中">觀察中</option><option value="需加強">需加強</option><option value="高風險">高風險</option></select>
+          <label>教學方向建議</label>
+          <textarea id="scalePlan" placeholder="例如：先固定練習頻率，再補獨立解題步驟；每週安排小型複習測驗"></textarea>
+          <div class="subhead">給家長的上課狀況留言</div>
+          <p class="muted">依照上方量表自動產生較委婉的家長回報，可再自行修改後貼到 Line。</p>
+          <textarea id="parentMessagePreview" class="message-preview" placeholder="按「產生家長留言」後會出現在這裡。"></textarea>
+          <div class="actions">
+            <button class="ghost" onclick="generateParentMessageFromForm(false)">產生家長留言</button>
+            <button class="ghost" onclick="generateParentMessageFromForm(true)">產生並複製</button>
+          </div>
           <div class="actions">
             <button class="primary" onclick="saveStudent()">儲存學生</button>
+            <button class="ghost" onclick="fillPlanSuggestion()">自動建議方向</button>
             <button class="ghost" onclick="resetStudentForm()">清空</button>
           </div>
         </div>
         <div class="card">
           <div class="toolbar">
             <h2>學生列表</h2>
-            <input id="studentSearch" placeholder="搜尋學生 / 科目 / 狀態" oninput="renderStudents()" style="max-width:260px" />
+            <div class="actions" style="margin-top:0">
+              <button onclick="printPDF('students')">學生 PDF</button>
+              <button onclick="exportCSV('students')">學生 CSV</button>
+            </div>
           </div>
+          <input id="studentSearch" placeholder="搜尋學生 / 科目 / 狀態 / 量表" oninput="renderStudents()" style="margin-bottom:12px" />
           <div id="studentList" class="list"></div>
         </div>
       </div>
@@ -230,62 +265,24 @@
           <label>學生</label>
           <select id="lessonStudent"></select>
           <div class="row">
-            <div>
-              <label>日期</label>
-              <input type="date" id="lessonDate" />
-            </div>
-            <div>
-              <label>課程狀態</label>
-              <select id="lessonStatus">
-                <option value="已排課">已排課</option>
-                <option value="已完成">已完成</option>
-                <option value="請假 / 取消">請假 / 取消</option>
-                <option value="待補課">待補課</option>
-                <option value="缺席">缺席</option>
-              </select>
-            </div>
+            <div><label>日期</label><input type="date" id="lessonDate" /></div>
+            <div><label>課程狀態</label><select id="lessonStatus"><option value="已排課">已排課</option><option value="已完成">已完成</option><option value="請假 / 取消">請假 / 取消</option><option value="待補課">待補課</option><option value="缺席">缺席</option></select></div>
           </div>
           <div class="row">
-            <div>
-              <label>開始時間</label>
-              <input type="time" id="lessonStart" />
-            </div>
-            <div>
-              <label>結束時間</label>
-              <input type="time" id="lessonEnd" />
-            </div>
+            <div><label>開始時間</label><input type="time" id="lessonStart" /></div>
+            <div><label>結束時間</label><input type="time" id="lessonEnd" /></div>
           </div>
           <label>上課地點</label>
           <input id="lessonLocation" placeholder="例如：學生家 / 線上 / 圖書館" />
+          <div class="row">
+            <div><label>行事曆提醒</label><select id="lessonReminder"><option value="0">不提醒</option><option value="10">課前 10 分鐘</option><option value="30" selected>課前 30 分鐘</option><option value="60">課前 1 小時</option><option value="1440">課前 1 天</option></select></div>
+            <div><label>課程類型</label><select id="lessonType"><option value="一般上課">一般上課</option><option value="考前複習">考前複習</option><option value="考卷訂正">考卷訂正</option><option value="補課">補課</option><option value="線上課">線上課</option></select></div>
+          </div>
           <div id="conflictNotice" class="notice"></div>
           <div class="row3">
-            <div>
-              <label>理解程度</label>
-              <select id="lessonUnderstanding">
-                <option value="未填">未填</option>
-                <option value="很好">很好</option>
-                <option value="普通">普通</option>
-                <option value="需要加強">需要加強</option>
-              </select>
-            </div>
-            <div>
-              <label>作業完成</label>
-              <select id="lessonHomework">
-                <option value="未填">未填</option>
-                <option value="完整完成">完整完成</option>
-                <option value="部分完成">部分完成</option>
-                <option value="未完成">未完成</option>
-              </select>
-            </div>
-            <div>
-              <label>專注度</label>
-              <select id="lessonFocus">
-                <option value="未填">未填</option>
-                <option value="高">高</option>
-                <option value="中">中</option>
-                <option value="低">低</option>
-              </select>
-            </div>
+            <div><label>理解程度</label><select id="lessonUnderstanding"><option value="未填">未填</option><option value="很好">很好</option><option value="普通">普通</option><option value="需要加強">需要加強</option></select></div>
+            <div><label>作業完成</label><select id="lessonHomework"><option value="未填">未填</option><option value="完整完成">完整完成</option><option value="部分完成">部分完成</option><option value="未完成">未完成</option></select></div>
+            <div><label>專注度</label><select id="lessonFocus"><option value="未填">未填</option><option value="高">高</option><option value="中">中</option><option value="低">低</option></select></div>
           </div>
           <label>本次上課內容</label>
           <textarea id="lessonContent" placeholder="例如：一元二次方程式、考卷訂正、錯題整理"></textarea>
@@ -295,6 +292,7 @@
           <textarea id="lessonNext" placeholder="例如：每天 15 分鐘練 5 題；下次先檢查錯題與公式應用"></textarea>
           <div class="actions">
             <button class="primary" onclick="saveLesson()">儲存課程</button>
+            <button class="ghost" onclick="saveLessonAndCalendar()">儲存並加入行事曆</button>
             <button class="ghost" onclick="resetLessonForm()">清空</button>
           </div>
         </div>
@@ -302,18 +300,16 @@
         <div class="card">
           <div class="toolbar">
             <h2>課程列表</h2>
-            <button onclick="exportCSV('lessons')">匯出課程 CSV</button>
+            <div class="actions" style="margin-top:0">
+              <button onclick="printPDF('lessons')">匯出 PDF</button>
+              <button onclick="exportCSV('lessons')">CSV</button>
+              <button onclick="exportICSUpcoming()">未來課程加入行事曆</button>
+              <button onclick="copyFilteredReminder()">複製本列表家長提醒</button>
+            </div>
           </div>
           <div class="filters">
-            <select id="filterStudent" onchange="renderLessons()"></select>
-            <select id="filterStatus" onchange="renderLessons()">
-              <option value="">全部狀態</option>
-              <option value="已排課">已排課</option>
-              <option value="已完成">已完成</option>
-              <option value="請假 / 取消">請假 / 取消</option>
-              <option value="待補課">待補課</option>
-              <option value="缺席">缺席</option>
-            </select>
+            <select id="filterStudent" onchange="renderLessons(); renderSchedule();"></select>
+            <select id="filterStatus" onchange="renderLessons()"><option value="">全部狀態</option><option value="已排課">已排課</option><option value="已完成">已完成</option><option value="請假 / 取消">請假 / 取消</option><option value="待補課">待補課</option><option value="缺席">缺席</option></select>
             <input type="month" id="filterMonth" onchange="renderLessons()" />
             <input id="lessonSearch" placeholder="搜尋地點 / 內容 / 狀況" oninput="renderLessons()" />
           </div>
@@ -322,27 +318,73 @@
       </div>
     </section>
 
+    <section class="panel" id="schedule">
+      <div class="card">
+        <div class="toolbar">
+          <h2>一週排程表</h2>
+          <div class="actions" style="margin-top:0">
+            <button onclick="moveWeek(-1)">上一週</button>
+            <button onclick="setThisWeek()">本週</button>
+            <button onclick="moveWeek(1)">下一週</button>
+            <button onclick="printPDF('schedule')">週排程 PDF</button>
+            <button onclick="exportICSWeek()">本週加入行事曆</button>
+          </div>
+        </div>
+        <div class="row" style="margin-bottom:12px">
+          <div><label>週一日期</label><input type="date" id="scheduleWeekStart" onchange="renderSchedule()" /></div>
+          <div><label>顯示學生</label><select id="scheduleStudent" onchange="renderSchedule()"></select></div>
+        </div>
+        <div id="weekLabel" class="muted" style="margin-bottom:12px"></div>
+        <div id="scheduleGrid" class="schedule-grid"></div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="toolbar">
+          <h2>月排程表</h2>
+          <div class="actions" style="margin-top:0">
+            <button onclick="moveMonth(-1)">上一月</button>
+            <button onclick="setThisMonth()">本月</button>
+            <button onclick="moveMonth(1)">下一月</button>
+            <button onclick="printPDF('monthSchedule')">月排程 PDF</button>
+            <button onclick="exportICSMonth()">本月加入行事曆</button>
+            <button onclick="copyMonthReminder()">複製本月家長提醒</button>
+          </div>
+        </div>
+        <div class="row" style="margin-bottom:12px">
+          <div><label>月份</label><input type="month" id="scheduleMonth" onchange="renderMonthSchedule()" /></div>
+          <div><label>顯示學生</label><select id="monthStudent" onchange="renderMonthSchedule()"></select></div>
+        </div>
+        <div id="monthLabel" class="muted" style="margin-bottom:12px"></div>
+        <div id="monthGrid" class="month-grid"></div>
+      </div>
+    </section>
+
     <section class="panel" id="backup">
       <div class="grid dashboard">
         <div class="card">
           <h2>匯出 / 匯入資料</h2>
-          <p class="muted">資料預設存在目前瀏覽器的 localStorage。換電腦、清除瀏覽器資料，可能會不見，所以建議定期匯出 JSON 備份。</p>
+          <p class="muted">資料預設存在目前瀏覽器的 localStorage。換裝置、清除瀏覽器資料，可能會不見，所以建議定期匯出 JSON 備份。</p>
           <div class="actions">
             <button class="primary" onclick="exportJSON()">匯出完整備份 JSON</button>
             <button onclick="exportCSV('students')">匯出學生 CSV</button>
             <button onclick="exportCSV('lessons')">匯出課程 CSV</button>
+            <button onclick="printPDF('students')">學生 PDF</button>
+            <button onclick="printPDF('lessons')">課程 PDF</button>
+            <button onclick="printPDF('scale')">量表 PDF</button>
+            <button onclick="exportICSUpcoming()">未來課程 .ics</button>
             <label class="file-label" for="importFile">匯入 JSON 備份</label>
             <input class="file-input" type="file" id="importFile" accept="application/json" onchange="importJSON(event)" />
             <button class="danger" onclick="clearAllData()">清除全部資料</button>
           </div>
           <details style="margin-top:16px">
-            <summary>使用方式</summary>
+            <summary>功能說明</summary>
             <ol class="muted">
-              <li>先到「學生資料」新增學生。</li>
-              <li>再到「排課 / 上課紀錄」選學生、填日期時間、地點與狀況。</li>
-              <li>課後可以把狀態改成「已完成」，並補上理解程度、作業完成度、下次追蹤。</li>
-              <li>若時間重疊，系統會提醒可能撞課。</li>
-              <li>定期到此頁匯出 JSON，避免資料遺失。</li>
+              <li>「學生資料」可填基本資料與學生量表。</li>
+              <li>「排課 / 紀錄」可安排時間、地點、狀態與課後觀察。</li>
+              <li>「加入行事曆」會下載 .ics，可匯入 iPhone / Google Calendar，提醒時間會寫進行事曆事件。</li>
+              <li>「匯出 PDF」會開啟列印畫面，手機可用分享或列印功能儲存成 PDF。</li>
+              <li>「排程表」可看一週與一個月課程分布，也能匯出週/月行事曆與複製家長提醒。</li>
+              <li>定期匯出 JSON，避免資料遺失。</li>
             </ol>
           </details>
         </div>
@@ -351,66 +393,192 @@
   </main>
 
 <script>
-const STORAGE_KEY = 'tutorSchedulerData_v1';
+const STORAGE_KEY = 'tutorSchedulerData_v3';
+const OLD_STORAGE_KEYS = ['tutorSchedulerData_v2', 'tutorSchedulerData_v1'];
 let data = loadData();
 
-function uid(prefix) {
-  return prefix + '_' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
-}
+const SCALE_OPTIONS = {
+  practice: ['未填','充足','普通','偏少','幾乎沒有'],
+  homework: ['未填','高','中','低','未交'],
+  independent: ['未填','可獨立完成','需要少量提示','需要老師帶著做','容易放棄'],
+  exam: ['未填','穩定','小考可大考易掉分','粗心偏多','嚴重失常'],
+  concept: ['未填','清楚','普通','薄弱','需要重建'],
+  reading: ['未填','能掌握題意','偶爾誤解','常看錯','需逐句引導'],
+  focus: ['未填','高','中','低','需要大量提醒'],
+  confidence: ['未填','有信心','普通','容易焦慮','抗拒學習']
+};
+const SCALE_LABELS = { practice:'回家練習', homework:'作業品質', independent:'獨立解題', exam:'大考穩定', concept:'概念理解', reading:'題意理解', focus:'專注度', confidence:'信心態度' };
+
+function uid(prefix) { return prefix + '_' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
 function currentMonth() { return new Date().toISOString().slice(0,7); }
+function pad(n) { return String(n).padStart(2,'0'); }
+function addDays(date, days) { const d = new Date(date); d.setDate(d.getDate()+days); return d; }
+function dateISO(d) { return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+function mondayOf(d) { const x = new Date(d); const day = x.getDay() || 7; x.setDate(x.getDate() - day + 1); x.setHours(0,0,0,0); return x; }
 function loadData() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    let raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      for (const key of OLD_STORAGE_KEYS) {
+        raw = localStorage.getItem(key);
+        if (raw) break;
+      }
+    }
     if (!raw) return { students: [], lessons: [] };
     const parsed = JSON.parse(raw);
     return { students: parsed.students || [], lessons: parsed.lessons || [] };
-  } catch (e) {
-    alert('讀取資料失敗，已建立空資料。');
-    return { students: [], lessons: [] };
-  }
+  } catch (e) { alert('讀取資料失敗，已建立空資料。'); return { students: [], lessons: [] }; }
 }
 function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-function studentName(id) {
-  const s = data.students.find(x => x.id === id);
-  return s ? s.name : '未知學生';
-}
+function studentName(id) { const s = data.students.find(x => x.id === id); return s ? s.name : '未知學生'; }
 function studentById(id) { return data.students.find(x => x.id === id); }
-function statusClass(status) {
-  if (status === '已完成') return 'done';
-  if (status === '已排課') return 'plan';
-  if (status === '請假 / 取消') return 'cancel';
-  if (status === '待補課') return 'makeup';
-  if (status === '缺席') return 'missed';
-  return '';
-}
-function escapeHTML(str='') {
-  return String(str).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
-}
-function getTimeValue(date, time) {
-  if (!date || !time) return null;
-  return new Date(date + 'T' + time).getTime();
-}
-function switchTab(tabId) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
-  document.querySelectorAll('.panel').forEach(panel => panel.classList.toggle('active', panel.id === tabId));
-  renderAll();
-}
+function statusClass(status) { if (status === '已完成') return 'done'; if (status === '已排課') return 'plan'; if (status === '請假 / 取消') return 'cancel'; if (status === '待補課') return 'makeup'; if (status === '缺席') return 'missed'; return ''; }
+function riskClass(risk) { if (risk === '穩定') return 'risk-low'; if (risk === '觀察中' || risk === '需加強') return 'risk-mid'; if (risk === '高風險') return 'risk-high'; return ''; }
+function escapeHTML(str='') { return String(str).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch])); }
+function getTimeValue(date, time) { if (!date || !time) return null; return new Date(date + 'T' + time).getTime(); }
+function switchTab(tabId) { document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId)); document.querySelectorAll('.panel').forEach(panel => panel.classList.toggle('active', panel.id === tabId)); renderAll(); }
 document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
-document.getElementById('lessonStudent').addEventListener('change', () => {
-  const s = studentById(document.getElementById('lessonStudent').value);
-  if (s && !document.getElementById('lessonLocation').value) document.getElementById('lessonLocation').value = s.location || '';
-});
-['lessonStudent','lessonDate','lessonStart','lessonEnd'].forEach(id => document.getElementById(id).addEventListener('input', checkConflict));
+function initScaleSelects() {
+  const map = { scalePractice:'practice', scaleHomework:'homework', scaleIndependent:'independent', scaleExam:'exam', scaleConcept:'concept', scaleReading:'reading', scaleFocus:'focus', scaleConfidence:'confidence' };
+  Object.entries(map).forEach(([id,key]) => {
+    const el = document.getElementById(id);
+    el.innerHTML = SCALE_OPTIONS[key].map(v => `<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('');
+  });
+}
+function getScaleFromForm() {
+  return {
+    practice: document.getElementById('scalePractice').value,
+    homework: document.getElementById('scaleHomework').value,
+    independent: document.getElementById('scaleIndependent').value,
+    exam: document.getElementById('scaleExam').value,
+    concept: document.getElementById('scaleConcept').value,
+    reading: document.getElementById('scaleReading').value,
+    focus: document.getElementById('scaleFocus').value,
+    confidence: document.getElementById('scaleConfidence').value,
+    risk: document.getElementById('scaleRisk').value,
+    plan: document.getElementById('scalePlan').value.trim(),
+    updatedAt: new Date().toISOString()
+  };
+}
+function setScaleForm(scale={}) {
+  document.getElementById('scalePractice').value = scale.practice || '未填';
+  document.getElementById('scaleHomework').value = scale.homework || '未填';
+  document.getElementById('scaleIndependent').value = scale.independent || '未填';
+  document.getElementById('scaleExam').value = scale.exam || '未填';
+  document.getElementById('scaleConcept').value = scale.concept || '未填';
+  document.getElementById('scaleReading').value = scale.reading || '未填';
+  document.getElementById('scaleFocus').value = scale.focus || '未填';
+  document.getElementById('scaleConfidence').value = scale.confidence || '未填';
+  document.getElementById('scaleRisk').value = scale.risk || '穩定';
+  document.getElementById('scalePlan').value = scale.plan || '';
+}
+function scaleSummary(scale={}) {
+  return Object.keys(SCALE_LABELS).map(k => `${SCALE_LABELS[k]}：${scale[k] || '未填'}`).join('｜');
+}
+
+function valueFilled(v) { return v && v !== '未填'; }
+function copyText(text, okMsg='已複製。') {
+  if (!text) return alert('沒有可複製的內容。');
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => alert(okMsg)).catch(() => window.prompt('請手動複製：', text));
+  } else {
+    window.prompt('請手動複製：', text);
+  }
+}
+function generateParentMessageFromForm(copy=false) {
+  const name = document.getElementById('studentName').value.trim() || '學生';
+  const note = document.getElementById('studentNote').value.trim();
+  const msg = buildParentStatusMessage(name, getScaleFromForm(), note);
+  document.getElementById('parentMessagePreview').value = msg;
+  if (copy) copyText(msg, '已產生並複製家長留言。');
+}
+function copyStudentStatusMessage(id) {
+  const s = studentById(id); if (!s) return;
+  copyText(buildParentStatusMessage(s.name, s.assessment || {}, s.note || ''), '已複製家長上課狀況留言。');
+}
+function buildParentStatusMessage(name, sc={}, note='') {
+  const positives = [];
+  const concerns = [];
+  const nextSteps = [];
+
+  if (['充足','普通'].includes(sc.practice)) positives.push('回家練習量有維持一定程度');
+  if (['偏少','幾乎沒有'].includes(sc.practice)) { concerns.push('回家練習量偏少，容易影響熟練度'); nextSteps.push('先把練習量固定成少量但規律'); }
+
+  if (['高','中'].includes(sc.homework)) positives.push('作業完成狀況大致穩定');
+  if (['低','未交'].includes(sc.homework)) { concerns.push('作業完成度還需要再拉起來'); nextSteps.push('每次課後會把作業拆小份並追蹤完成情況'); }
+
+  if (['可獨立完成','需要少量提示'].includes(sc.independent)) positives.push('解題時已能嘗試自己下手');
+  if (['需要老師帶著做','容易放棄'].includes(sc.independent)) { concerns.push('獨立解題時仍需要較多提示'); nextSteps.push('課堂會加強「自己讀題、列步驟、先寫第一步」的訓練'); }
+
+  if (sc.exam === '穩定') positives.push('考試表現目前較穩定');
+  if (['小考可大考易掉分','粗心偏多','嚴重失常'].includes(sc.exam)) { concerns.push('大考穩定度需要特別留意'); nextSteps.push('加入限時練習與錯題整理，減少粗心和臨場失誤'); }
+
+  if (['清楚','普通'].includes(sc.concept)) positives.push('概念理解目前可以跟上');
+  if (['薄弱','需要重建'].includes(sc.concept)) { concerns.push('部分概念需要重新補強'); nextSteps.push('會先把基礎概念補穩，再進入題型練習'); }
+
+  if (['能掌握題意','偶爾誤解'].includes(sc.reading)) positives.push('題意判讀大致可以');
+  if (['常看錯','需逐句引導'].includes(sc.reading)) { concerns.push('題意判讀容易出錯'); nextSteps.push('會練習圈關鍵字、整理已知與未知'); }
+
+  if (['高','中'].includes(sc.focus)) positives.push('上課專注度整體尚可');
+  if (['低','需要大量提醒'].includes(sc.focus)) { concerns.push('專注度需要較多提醒'); nextSteps.push('課堂會切成短任務，讓學生比較容易維持狀態'); }
+
+  if (sc.confidence === '有信心') positives.push('學習信心不錯');
+  if (['容易焦慮','抗拒學習'].includes(sc.confidence)) { concerns.push('遇到不熟的題目時信心較容易受影響'); nextSteps.push('會先安排可完成的小題，慢慢建立成功經驗'); }
+
+  const positiveText = positives.length ? positives.slice(0, 3).join('，') + '。' : '目前課堂上仍可以配合練習，我會持續觀察學習狀況。';
+  const concernText = concerns.length ? '目前比較需要留意的是：' + concerns.slice(0, 4).join('、') + '。' : '目前整體狀況大致穩定，會繼續維持練習節奏。';
+  const plan = (sc.plan && sc.plan.trim()) ? sc.plan.trim() : (nextSteps.length ? nextSteps.slice(0, 3).join('；') + '。' : '接下來會維持複習、練習與錯題檢討的節奏。');
+  const noteText = note ? `\n\n補充：${note}` : '';
+  return `您好，跟您回報一下${name}目前的學習狀況：\n\n${positiveText}\n\n${concernText}\n\n接下來我會先以「${plan}」為主，並持續追蹤作業與考試表現。${noteText}`;
+}
+function formatMD(date='') {
+  const [y,m,d] = date.split('-');
+  return `${Number(m)}/${Number(d)}`;
+}
+function monthNumberFromDate(date='') {
+  const m = date.split('-')[1];
+  return m ? Number(m) : Number(new Date().getMonth()+1);
+}
+function buildParentReminder(lessons, includeName=false) {
+  const rows = [...lessons].sort((a,b) => (a.date+a.start).localeCompare(b.date+b.start));
+  if (!rows.length) return '';
+  const month = monthNumberFromDate(rows[0].date);
+  const body = rows.map(l => `${includeName ? `學生：${studentName(l.studentId)}\n` : ''}上課日期：${formatMD(l.date)}\n上課時間：${l.start}-${l.end}`).join('\n\n');
+  return `再次跟您確認${month}月課程如下\n\n${body}`;
+}
+function copyLessonReminder(id) {
+  const l = data.lessons.find(x => x.id === id); if (!l) return;
+  copyText(buildParentReminder([l], false), '已複製家長課程提醒。');
+}
+function copyFilteredReminder() {
+  const rows = filteredLessonsForList().filter(l => l.status !== '請假 / 取消');
+  const sid = document.getElementById('filterStudent')?.value || '';
+  const msg = buildParentReminder(rows, !sid);
+  if (!msg) return alert('目前列表沒有可提醒的課程。');
+  copyText(msg, '已複製本列表家長課程提醒。');
+}
+function fillPlanSuggestion() {
+  const sc = getScaleFromForm();
+  const tips = [];
+  if (['偏少','幾乎沒有'].includes(sc.practice)) tips.push('先把回家練習量固定成「每天 10–15 分鐘、少量但連續」。');
+  if (['低','未交'].includes(sc.homework)) tips.push('作業改成分段檢查，先追求準時完成，再追求正確率。');
+  if (['需要老師帶著做','容易放棄'].includes(sc.independent)) tips.push('每題要求學生先寫出第一步與題目關鍵字，老師再提示。');
+  if (['小考可大考易掉分','粗心偏多','嚴重失常'].includes(sc.exam)) tips.push('加入限時小測與錯題分類，訓練大考穩定度。');
+  if (['薄弱','需要重建'].includes(sc.concept)) tips.push('先補概念與公式來源，再做題型練習，不要只刷題。');
+  if (['常看錯','需逐句引導'].includes(sc.reading)) tips.push('練習圈關鍵字、列已知未知，降低題意誤判。');
+  if (['低','需要大量提醒'].includes(sc.focus)) tips.push('每 15–20 分鐘切小任務，課中安排即時回饋。');
+  if (['容易焦慮','抗拒學習'].includes(sc.confidence)) tips.push('先安排可完成的小題，建立成功經驗。');
+  document.getElementById('scalePlan').value = tips.length ? tips.join('\n') : '目前狀況穩定，可維持固定複習節奏，定期追蹤錯題與大考表現。';
+}
 
 function saveStudent() {
   const id = document.getElementById('studentId').value || uid('stu');
   const name = document.getElementById('studentName').value.trim();
   if (!name) return alert('請先填學生姓名。');
   const student = {
-    id,
-    name,
+    id, name,
     grade: document.getElementById('studentGrade').value.trim(),
     subject: document.getElementById('studentSubject').value.trim(),
     contact: document.getElementById('studentContact').value.trim(),
@@ -418,18 +586,15 @@ function saveStudent() {
     rate: document.getElementById('studentRate').value.trim(),
     status: document.getElementById('studentStatus').value,
     note: document.getElementById('studentNote').value.trim(),
+    assessment: getScaleFromForm(),
     updatedAt: new Date().toISOString()
   };
   const idx = data.students.findIndex(s => s.id === id);
   if (idx >= 0) data.students[idx] = student; else data.students.push(student);
-  saveData();
-  resetStudentForm();
-  renderAll();
-  alert('學生資料已儲存。');
+  saveData(); resetStudentForm(); renderAll(); alert('學生資料已儲存。');
 }
 function editStudent(id) {
-  const s = studentById(id);
-  if (!s) return;
+  const s = studentById(id); if (!s) return;
   switchTab('students');
   document.getElementById('studentFormTitle').textContent = '編輯學生';
   document.getElementById('studentId').value = s.id;
@@ -441,6 +606,8 @@ function editStudent(id) {
   document.getElementById('studentRate').value = s.rate || '';
   document.getElementById('studentStatus').value = s.status || '正常上課';
   document.getElementById('studentNote').value = s.note || '';
+  setScaleForm(s.assessment || {});
+  document.getElementById('parentMessagePreview').value = buildParentStatusMessage(s.name, s.assessment || {}, s.note || '');
 }
 function deleteStudent(id) {
   const count = data.lessons.filter(l => l.studentId === id).length;
@@ -452,60 +619,42 @@ function deleteStudent(id) {
 }
 function resetStudentForm() {
   document.getElementById('studentFormTitle').textContent = '新增學生';
-  ['studentId','studentName','studentGrade','studentSubject','studentContact','studentLocation','studentRate','studentNote'].forEach(id => document.getElementById(id).value = '');
+  ['studentId','studentName','studentGrade','studentSubject','studentContact','studentLocation','studentRate','studentNote','parentMessagePreview'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('studentStatus').value = '正常上課';
+  setScaleForm({});
 }
 function renderStudents() {
   const q = document.getElementById('studentSearch')?.value?.trim().toLowerCase() || '';
   const box = document.getElementById('studentList');
   const rows = data.students
-    .filter(s => [s.name, s.grade, s.subject, s.status, s.note].join(' ').toLowerCase().includes(q))
+    .filter(s => [s.name, s.grade, s.subject, s.status, s.note, scaleSummary(s.assessment || {}), s.assessment?.risk].join(' ').toLowerCase().includes(q))
     .sort((a,b) => (a.name || '').localeCompare(b.name || '', 'zh-Hant'));
   if (!rows.length) { box.innerHTML = '<div class="empty">還沒有學生資料。</div>'; return; }
-  box.innerHTML = rows.map(s => `
-    <div class="item">
-      <div class="item-top">
-        <div>
-          <div class="item-title">${escapeHTML(s.name)}</div>
-          <div class="item-sub">${escapeHTML(s.grade || '未填年級')}｜${escapeHTML(s.subject || '未填科目')}｜${escapeHTML(s.location || '未填地點')}</div>
-          <div class="item-sub">${escapeHTML(s.contact || '未填聯絡方式')} ${s.rate ? '｜' + escapeHTML(s.rate) : ''}</div>
-        </div>
-        <div class="badges"><span class="badge">${escapeHTML(s.status || '正常上課')}</span></div>
-      </div>
-      ${s.note ? `<div class="item-sub" style="margin-top:8px">備註：${escapeHTML(s.note)}</div>` : ''}
-      <div class="item-actions">
-        <button class="small-btn" onclick="editStudent('${s.id}')">編輯</button>
-        <button class="small-btn" onclick="quickLesson('${s.id}')">排課</button>
-        <button class="small-btn danger" onclick="deleteStudent('${s.id}')">刪除</button>
-      </div>
-    </div>`).join('');
+  box.innerHTML = rows.map(s => {
+    const sc = s.assessment || {};
+    return `<div class="item"><div class="item-top"><div><div class="item-title">${escapeHTML(s.name)}</div><div class="item-sub">${escapeHTML(s.grade || '未填年級')}｜${escapeHTML(s.subject || '未填科目')}｜${escapeHTML(s.location || '未填地點')}</div><div class="item-sub">${escapeHTML(s.contact || '未填聯絡方式')} ${s.rate ? '｜' + escapeHTML(s.rate) : ''}</div></div><div class="badges"><span class="badge">${escapeHTML(s.status || '正常上課')}</span><span class="badge ${riskClass(sc.risk)}">${escapeHTML(sc.risk || '穩定')}</span></div></div>${s.note ? `<div class="item-sub" style="margin-top:8px">備註：${escapeHTML(s.note)}</div>` : ''}<div class="scale-mini"><div>練習：${escapeHTML(sc.practice || '未填')}</div><div>作業：${escapeHTML(sc.homework || '未填')}</div><div>解題：${escapeHTML(sc.independent || '未填')}</div><div>大考：${escapeHTML(sc.exam || '未填')}</div></div>${sc.plan ? `<div class="item-sub" style="margin-top:8px"><strong>方向：</strong>${escapeHTML(sc.plan).replace(/\n/g,'<br>')}</div>` : ''}<div class="item-actions"><button class="small-btn" onclick="editStudent('${s.id}')">編輯</button><button class="small-btn" onclick="quickLesson('${s.id}')">排課</button><button class="small-btn" onclick="copyStudentStatusMessage('${s.id}')">複製家長留言</button><button class="small-btn danger" onclick="deleteStudent('${s.id}')">刪除</button></div></div>`;
+  }).join('');
 }
 
-function quickLesson(studentId) {
-  switchTab('lessons');
-  resetLessonForm();
-  document.getElementById('lessonStudent').value = studentId;
-  const s = studentById(studentId);
-  document.getElementById('lessonLocation').value = s?.location || '';
-}
-function saveLesson() {
-  if (!data.students.length) return alert('請先新增至少一位學生。');
-  const id = document.getElementById('lessonId').value || uid('les');
+function quickLesson(studentId) { switchTab('lessons'); resetLessonForm(); document.getElementById('lessonStudent').value = studentId; const s = studentById(studentId); document.getElementById('lessonLocation').value = s?.location || ''; }
+document.getElementById('lessonStudent').addEventListener('change', () => { const s = studentById(document.getElementById('lessonStudent').value); if (s && !document.getElementById('lessonLocation').value) document.getElementById('lessonLocation').value = s.location || ''; });
+['lessonStudent','lessonDate','lessonStart','lessonEnd'].forEach(id => document.getElementById(id).addEventListener('input', checkConflict));
+
+function readLessonForm(idOverride=null) {
+  const id = idOverride || document.getElementById('lessonId').value || uid('les');
   const studentId = document.getElementById('lessonStudent').value;
   const date = document.getElementById('lessonDate').value;
   const start = document.getElementById('lessonStart').value;
   const end = document.getElementById('lessonEnd').value;
-  if (!studentId) return alert('請選擇學生。');
-  if (!date || !start || !end) return alert('請填完整日期、開始時間、結束時間。');
-  if (getTimeValue(date, end) <= getTimeValue(date, start)) return alert('結束時間必須晚於開始時間。');
-  const lesson = {
-    id,
-    studentId,
-    date,
-    start,
-    end,
+  if (!studentId) throw new Error('請選擇學生。');
+  if (!date || !start || !end) throw new Error('請填完整日期、開始時間、結束時間。');
+  if (getTimeValue(date, end) <= getTimeValue(date, start)) throw new Error('結束時間必須晚於開始時間。');
+  return {
+    id, studentId, date, start, end,
     status: document.getElementById('lessonStatus').value,
     location: document.getElementById('lessonLocation').value.trim(),
+    reminder: Number(document.getElementById('lessonReminder').value || 0),
+    type: document.getElementById('lessonType').value,
     understanding: document.getElementById('lessonUnderstanding').value,
     homework: document.getElementById('lessonHomework').value,
     focus: document.getElementById('lessonFocus').value,
@@ -514,16 +663,18 @@ function saveLesson() {
     next: document.getElementById('lessonNext').value.trim(),
     updatedAt: new Date().toISOString()
   };
-  const idx = data.lessons.findIndex(l => l.id === id);
-  if (idx >= 0) data.lessons[idx] = lesson; else data.lessons.push(lesson);
-  saveData();
-  resetLessonForm();
-  renderAll();
-  alert('課程已儲存。');
 }
+function saveLesson(silent=false) {
+  if (!data.students.length) { alert('請先新增至少一位學生。'); return null; }
+  let lesson;
+  try { lesson = readLessonForm(); } catch (err) { alert(err.message); return null; }
+  const idx = data.lessons.findIndex(l => l.id === lesson.id);
+  if (idx >= 0) data.lessons[idx] = lesson; else data.lessons.push(lesson);
+  saveData(); resetLessonForm(); renderAll(); if (!silent) alert('課程已儲存。'); return lesson;
+}
+function saveLessonAndCalendar() { const lesson = saveLesson(true); if (lesson) { exportICS([lesson], `家教課程_${studentName(lesson.studentId)}_${lesson.date}.ics`); alert('課程已儲存，並已下載行事曆檔。請開啟 .ics 匯入行事曆。'); } }
 function editLesson(id) {
-  const l = data.lessons.find(x => x.id === id);
-  if (!l) return;
+  const l = data.lessons.find(x => x.id === id); if (!l) return;
   switchTab('lessons');
   document.getElementById('lessonFormTitle').textContent = '編輯課程 / 上課紀錄';
   document.getElementById('lessonId').value = l.id;
@@ -533,6 +684,8 @@ function editLesson(id) {
   document.getElementById('lessonEnd').value = l.end || '';
   document.getElementById('lessonStatus').value = l.status || '已排課';
   document.getElementById('lessonLocation').value = l.location || '';
+  document.getElementById('lessonReminder').value = String(l.reminder ?? 30);
+  document.getElementById('lessonType').value = l.type || '一般上課';
   document.getElementById('lessonUnderstanding').value = l.understanding || '未填';
   document.getElementById('lessonHomework').value = l.homework || '未填';
   document.getElementById('lessonFocus').value = l.focus || '未填';
@@ -541,18 +694,8 @@ function editLesson(id) {
   document.getElementById('lessonNext').value = l.next || '';
   checkConflict();
 }
-function duplicateLesson(id) {
-  const l = data.lessons.find(x => x.id === id);
-  if (!l) return;
-  const copy = { ...l, id: uid('les'), status: '已排課', updatedAt: new Date().toISOString() };
-  data.lessons.push(copy);
-  saveData(); renderAll();
-}
-function deleteLesson(id) {
-  if (!confirm('確定刪除這筆課程嗎？')) return;
-  data.lessons = data.lessons.filter(l => l.id !== id);
-  saveData(); renderAll();
-}
+function duplicateLesson(id) { const l = data.lessons.find(x => x.id === id); if (!l) return; const copy = { ...l, id: uid('les'), status: '已排課', updatedAt: new Date().toISOString() }; data.lessons.push(copy); saveData(); renderAll(); }
+function deleteLesson(id) { if (!confirm('確定刪除這筆課程嗎？')) return; data.lessons = data.lessons.filter(l => l.id !== id); saveData(); renderAll(); }
 function resetLessonForm() {
   document.getElementById('lessonFormTitle').textContent = '新增課程 / 上課紀錄';
   ['lessonId','lessonLocation','lessonContent','lessonCondition','lessonNext'].forEach(id => document.getElementById(id).value = '');
@@ -560,6 +703,8 @@ function resetLessonForm() {
   document.getElementById('lessonStart').value = '';
   document.getElementById('lessonEnd').value = '';
   document.getElementById('lessonStatus').value = '已排課';
+  document.getElementById('lessonReminder').value = '30';
+  document.getElementById('lessonType').value = '一般上課';
   document.getElementById('lessonUnderstanding').value = '未填';
   document.getElementById('lessonHomework').value = '未填';
   document.getElementById('lessonFocus').value = '未填';
@@ -575,65 +720,46 @@ function checkConflict() {
   if (!date || !start || !end) { notice.classList.remove('show'); return; }
   const s1 = getTimeValue(date, start), e1 = getTimeValue(date, end);
   if (e1 <= s1) { notice.textContent = '提醒：結束時間要晚於開始時間。'; notice.classList.add('show'); return; }
-  const conflicts = data.lessons.filter(l => l.id !== id && l.date === date && l.status !== '請假 / 取消')
-    .filter(l => {
-      const s2 = getTimeValue(l.date, l.start), e2 = getTimeValue(l.date, l.end);
-      return s1 < e2 && s2 < e1;
-    });
-  if (conflicts.length) {
-    notice.innerHTML = '提醒：可能撞課 → ' + conflicts.map(l => `${escapeHTML(studentName(l.studentId))} ${l.start}-${l.end}`).join('、');
-    notice.classList.add('show');
-  } else notice.classList.remove('show');
+  const conflicts = data.lessons.filter(l => l.id !== id && l.date === date && l.status !== '請假 / 取消').filter(l => { const s2 = getTimeValue(l.date, l.start), e2 = getTimeValue(l.date, l.end); return s1 < e2 && s2 < e1; });
+  if (conflicts.length) { notice.innerHTML = '提醒：可能撞課 → ' + conflicts.map(l => `${escapeHTML(studentName(l.studentId))} ${l.start}-${l.end}`).join('、'); notice.classList.add('show'); }
+  else notice.classList.remove('show');
 }
-function renderLessons(targetId='lessonList', limit=null, upcomingOnly=false) {
-  const box = document.getElementById(targetId);
-  if (!box) return;
+
+function filteredLessonsForList() {
   const fs = document.getElementById('filterStudent')?.value || '';
   const fst = document.getElementById('filterStatus')?.value || '';
   const fm = document.getElementById('filterMonth')?.value || '';
   const q = document.getElementById('lessonSearch')?.value?.trim().toLowerCase() || '';
-  const now = new Date();
   let rows = [...data.lessons].filter(l => data.students.some(s => s.id === l.studentId));
-  if (targetId === 'lessonList') {
-    if (fs) rows = rows.filter(l => l.studentId === fs);
-    if (fst) rows = rows.filter(l => l.status === fst);
-    if (fm) rows = rows.filter(l => (l.date || '').startsWith(fm));
-    if (q) rows = rows.filter(l => [studentName(l.studentId), l.location, l.content, l.condition, l.next].join(' ').toLowerCase().includes(q));
-    rows.sort((a,b) => (b.date + b.start).localeCompare(a.date + a.start));
-  } else {
-    rows = rows.filter(l => getTimeValue(l.date, l.start) >= now.getTime() - 86400000 && l.status === '已排課');
-    rows.sort((a,b) => (a.date + a.start).localeCompare(b.date + b.start));
-  }
+  if (fs) rows = rows.filter(l => l.studentId === fs);
+  if (fst) rows = rows.filter(l => l.status === fst);
+  if (fm) rows = rows.filter(l => (l.date || '').startsWith(fm));
+  if (q) rows = rows.filter(l => [studentName(l.studentId), l.location, l.content, l.condition, l.next].join(' ').toLowerCase().includes(q));
+  return rows.sort((a,b) => (b.date + b.start).localeCompare(a.date + a.start));
+}
+function renderLessons(targetId='lessonList', limit=null) {
+  const box = document.getElementById(targetId); if (!box) return;
+  let rows;
+  const now = new Date();
+  if (targetId === 'lessonList') rows = filteredLessonsForList();
+  else rows = [...data.lessons].filter(l => getTimeValue(l.date, l.start) >= now.getTime() - 86400000 && l.status === '已排課').sort((a,b) => (a.date + a.start).localeCompare(b.date + b.start));
   if (limit) rows = rows.slice(0, limit);
   if (!rows.length) { box.innerHTML = '<div class="empty">目前沒有符合條件的課程。</div>'; return; }
-  box.innerHTML = rows.map(l => `
-    <div class="item">
-      <div class="item-top">
-        <div>
-          <div class="item-title">${escapeHTML(studentName(l.studentId))}｜${escapeHTML(l.date)} ${escapeHTML(l.start)}-${escapeHTML(l.end)}</div>
-          <div class="item-sub">地點：${escapeHTML(l.location || '未填')}</div>
-          <div class="item-sub">理解：${escapeHTML(l.understanding || '未填')}｜作業：${escapeHTML(l.homework || '未填')}｜專注：${escapeHTML(l.focus || '未填')}</div>
-        </div>
-        <div class="badges"><span class="badge ${statusClass(l.status)}">${escapeHTML(l.status)}</span></div>
-      </div>
-      ${l.content ? `<div class="item-sub" style="margin-top:8px"><strong>內容：</strong>${escapeHTML(l.content)}</div>` : ''}
-      ${l.condition ? `<div class="item-sub"><strong>狀況：</strong>${escapeHTML(l.condition)}</div>` : ''}
-      ${l.next ? `<div class="item-sub"><strong>下次追蹤：</strong>${escapeHTML(l.next)}</div>` : ''}
-      <div class="item-actions">
-        <button class="small-btn" onclick="editLesson('${l.id}')">編輯</button>
-        <button class="small-btn" onclick="duplicateLesson('${l.id}')">複製</button>
-        <button class="small-btn danger" onclick="deleteLesson('${l.id}')">刪除</button>
-      </div>
-    </div>`).join('');
+  box.innerHTML = rows.map(l => `<div class="item"><div class="item-top"><div><div class="item-title">${escapeHTML(studentName(l.studentId))}｜${escapeHTML(l.date)} ${escapeHTML(l.start)}-${escapeHTML(l.end)}</div><div class="item-sub">${escapeHTML(l.type || '一般上課')}｜地點：${escapeHTML(l.location || '未填')}｜提醒：${reminderText(l.reminder)}</div><div class="item-sub">理解：${escapeHTML(l.understanding || '未填')}｜作業：${escapeHTML(l.homework || '未填')}｜專注：${escapeHTML(l.focus || '未填')}</div></div><div class="badges"><span class="badge ${statusClass(l.status)}">${escapeHTML(l.status)}</span></div></div>${l.content ? `<div class="item-sub" style="margin-top:8px"><strong>內容：</strong>${escapeHTML(l.content)}</div>` : ''}${l.condition ? `<div class="item-sub"><strong>狀況：</strong>${escapeHTML(l.condition)}</div>` : ''}${l.next ? `<div class="item-sub"><strong>下次追蹤：</strong>${escapeHTML(l.next)}</div>` : ''}<div class="item-actions"><button class="small-btn" onclick="editLesson('${l.id}')">編輯</button><button class="small-btn" onclick="duplicateLesson('${l.id}')">複製</button><button class="small-btn" onclick="exportICSById('${l.id}')">加入行事曆</button><button class="small-btn" onclick="copyLessonReminder('${l.id}')">複製提醒</button><button class="small-btn danger" onclick="deleteLesson('${l.id}')">刪除</button></div></div>`).join('');
 }
+function reminderText(mins) { mins = Number(mins || 0); if (!mins) return '不提醒'; if (mins === 1440) return '課前 1 天'; if (mins === 60) return '課前 1 小時'; return `課前 ${mins} 分鐘`; }
 function populateStudentSelects() {
-  const options = data.students
-    .sort((a,b) => (a.name || '').localeCompare(b.name || '', 'zh-Hant'))
-    .map(s => `<option value="${s.id}">${escapeHTML(s.name)}${s.subject ? '｜' + escapeHTML(s.subject) : ''}</option>`).join('');
+  const options = data.students.sort((a,b) => (a.name || '').localeCompare(b.name || '', 'zh-Hant')).map(s => `<option value="${s.id}">${escapeHTML(s.name)}${s.subject ? '｜' + escapeHTML(s.subject) : ''}</option>`).join('');
   document.getElementById('lessonStudent').innerHTML = data.students.length ? options : '<option value="">請先新增學生</option>';
   const old = document.getElementById('filterStudent')?.value || '';
   document.getElementById('filterStudent').innerHTML = '<option value="">全部學生</option>' + options;
   document.getElementById('filterStudent').value = old;
+  const oldSch = document.getElementById('scheduleStudent')?.value || '';
+  document.getElementById('scheduleStudent').innerHTML = '<option value="">全部學生</option>' + options;
+  document.getElementById('scheduleStudent').value = oldSch;
+  const oldMonth = document.getElementById('monthStudent')?.value || '';
+  document.getElementById('monthStudent').innerHTML = '<option value="">全部學生</option>' + options;
+  document.getElementById('monthStudent').value = oldMonth;
 }
 function renderDashboard() {
   const now = new Date();
@@ -641,60 +767,168 @@ function renderDashboard() {
   document.getElementById('statUpcoming').textContent = data.lessons.filter(l => l.status === '已排課' && getTimeValue(l.date,l.start) >= now.getTime()).length;
   document.getElementById('statDoneMonth').textContent = data.lessons.filter(l => l.status === '已完成' && (l.date || '').startsWith(currentMonth())).length;
   document.getElementById('statNeedFollow').textContent = data.lessons.filter(l => ['需要加強','未完成','低'].includes(l.understanding) || ['需要加強','未完成','低'].includes(l.homework) || ['需要加強','未完成','低'].includes(l.focus) || l.status === '待補課' || l.status === '缺席').length;
-  renderLessons('dashboardLessons', 8, true);
+  document.getElementById('statHighRisk').textContent = data.students.filter(s => ['需加強','高風險'].includes(s.assessment?.risk)).length;
+  renderLessons('dashboardLessons', 8);
+  renderScaleDashboard();
 }
-function renderAll() { populateStudentSelects(); renderStudents(); renderLessons(); renderDashboard(); }
+function renderScaleDashboard() {
+  const box = document.getElementById('dashboardScale');
+  const rows = data.students.filter(s => ['觀察中','需加強','高風險'].includes(s.assessment?.risk) || ['偏少','幾乎沒有'].includes(s.assessment?.practice) || ['需要老師帶著做','容易放棄'].includes(s.assessment?.independent)).slice(0, 8);
+  if (!rows.length) { box.innerHTML = '<div class="empty">目前沒有特別需要提醒的量表項目。</div>'; return; }
+  box.innerHTML = rows.map(s => `<div class="item"><div class="item-top"><div><div class="item-title">${escapeHTML(s.name)}</div><div class="item-sub">${escapeHTML(scaleSummary(s.assessment || {}))}</div></div><div class="badges"><span class="badge ${riskClass(s.assessment?.risk)}">${escapeHTML(s.assessment?.risk || '穩定')}</span></div></div>${s.assessment?.plan ? `<div class="item-sub" style="margin-top:8px"><strong>方向：</strong>${escapeHTML(s.assessment.plan).replace(/\n/g,'<br>')}</div>` : ''}</div>`).join('');
+}
+function renderAll() { populateStudentSelects(); renderStudents(); renderLessons(); renderSchedule(); renderMonthSchedule(); renderDashboard(); }
 
-function csvEscape(v) {
-  const s = String(v ?? '');
-  return '"' + s.replace(/"/g, '""') + '"';
+function getWeekStartDate() { const input = document.getElementById('scheduleWeekStart'); return input.value ? new Date(input.value + 'T00:00') : mondayOf(new Date()); }
+function setThisWeek() { document.getElementById('scheduleWeekStart').value = dateISO(mondayOf(new Date())); renderSchedule(); }
+function moveWeek(n) { const start = getWeekStartDate(); document.getElementById('scheduleWeekStart').value = dateISO(addDays(start, n*7)); renderSchedule(); }
+function lessonsForWeek() {
+  const start = getWeekStartDate();
+  const end = addDays(start, 7);
+  const sid = document.getElementById('scheduleStudent')?.value || '';
+  return data.lessons.filter(l => {
+    const d = new Date(l.date + 'T00:00');
+    return d >= start && d < end && (!sid || l.studentId === sid);
+  }).sort((a,b) => (a.date + a.start).localeCompare(b.date + b.start));
 }
-function downloadText(filename, content, type='text/plain') {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
+function renderSchedule() {
+  const grid = document.getElementById('scheduleGrid'); if (!grid) return;
+  const start = getWeekStartDate();
+  const weekEnd = addDays(start, 6);
+  document.getElementById('weekLabel').textContent = `顯示範圍：${dateISO(start)} ～ ${dateISO(weekEnd)}`;
+  const today = todayISO();
+  const rows = lessonsForWeek();
+  const names = ['一','二','三','四','五','六','日'];
+  grid.innerHTML = Array.from({length:7}, (_,i) => {
+    const d = dateISO(addDays(start, i));
+    const dayRows = rows.filter(l => l.date === d);
+    return `<div class="day-card ${d === today ? 'day-today' : ''}"><div class="day-title"><span>週${names[i]}</span><span>${d.slice(5)}</span></div>${dayRows.length ? dayRows.map(l => `<div class="lesson-chip"><strong>${escapeHTML(l.start)}-${escapeHTML(l.end)} ${escapeHTML(studentName(l.studentId))}</strong><br>${escapeHTML(l.type || '一般上課')}｜${escapeHTML(l.location || '未填地點')}<br><span class="muted">${escapeHTML(l.status)}｜${reminderText(l.reminder)}</span></div>`).join('') : '<div class="muted">沒有課程</div>'}</div>`;
+  }).join('');
 }
-function exportJSON() {
-  downloadText('家教排課備份_' + todayISO() + '.json', JSON.stringify(data, null, 2), 'application/json');
+
+function getMonthValue() { return document.getElementById('scheduleMonth')?.value || currentMonth(); }
+function setThisMonth() { document.getElementById('scheduleMonth').value = currentMonth(); renderMonthSchedule(); }
+function moveMonth(n) {
+  const [y,m] = getMonthValue().split('-').map(Number);
+  const d = new Date(y, (m || 1) - 1 + n, 1);
+  document.getElementById('scheduleMonth').value = d.getFullYear() + '-' + pad(d.getMonth()+1);
+  renderMonthSchedule();
 }
+function lessonsForMonth() {
+  const month = getMonthValue();
+  const sid = document.getElementById('monthStudent')?.value || '';
+  return data.lessons.filter(l => (l.date || '').startsWith(month) && (!sid || l.studentId === sid)).sort((a,b) => (a.date + a.start).localeCompare(b.date + b.start));
+}
+function renderMonthSchedule() {
+  const grid = document.getElementById('monthGrid'); if (!grid) return;
+  const month = getMonthValue();
+  if (!document.getElementById('scheduleMonth').value) document.getElementById('scheduleMonth').value = month;
+  const [y,m] = month.split('-').map(Number);
+  const first = new Date(y, m - 1, 1);
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const offset = (first.getDay() + 6) % 7; // Monday first
+  const today = todayISO();
+  const rows = lessonsForMonth();
+  const names = ['一','二','三','四','五','六','日'];
+  document.getElementById('monthLabel').textContent = `顯示月份：${y} 年 ${m} 月｜共 ${rows.length} 堂課`;
+  const cells = names.map(n => `<div class="month-head">週${n}</div>`);
+  for (let i=0; i<offset; i++) cells.push('<div class="month-day empty"></div>');
+  for (let day=1; day<=daysInMonth; day++) {
+    const d = `${y}-${pad(m)}-${pad(day)}`;
+    const dayRows = rows.filter(l => l.date === d);
+    cells.push(`<div class="month-day ${d === today ? 'today' : ''}"><div class="month-date"><span>${day}</span><span>${dayRows.length ? dayRows.length + '堂' : ''}</span></div>${dayRows.map(l => `<div class="month-chip"><strong>${escapeHTML(l.start)} ${escapeHTML(studentName(l.studentId))}</strong><br><span class="hide-small">${escapeHTML(l.end)}｜${escapeHTML(l.location || '未填')}</span></div>`).join('')}</div>`);
+  }
+  grid.innerHTML = cells.join('');
+}
+function exportICSMonth() { exportICS(lessonsForMonth().filter(l => l.status !== '請假 / 取消'), '家教本月課程_' + getMonthValue() + '.ics'); }
+function copyMonthReminder() {
+  const rows = lessonsForMonth().filter(l => l.status !== '請假 / 取消');
+  const sid = document.getElementById('monthStudent')?.value || '';
+  const msg = buildParentReminder(rows, !sid);
+  if (!msg) return alert('這個月沒有可提醒的課程。');
+  copyText(msg, '已複製本月家長課程提醒。');
+}
+
+function csvEscape(v) { const s = String(v ?? ''); return '"' + s.replace(/"/g, '""') + '"'; }
+function downloadText(filename, content, type='text/plain') { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+function exportJSON() { downloadText('家教排課備份_' + todayISO() + '.json', JSON.stringify(data, null, 2), 'application/json'); }
 function exportCSV(kind) {
   let rows = [];
   if (kind === 'students') {
-    rows.push(['姓名','年級','科目','聯絡方式','預設地點','收費','狀態','備註','更新時間']);
-    data.students.forEach(s => rows.push([s.name,s.grade,s.subject,s.contact,s.location,s.rate,s.status,s.note,s.updatedAt]));
-    downloadText('學生資料_' + todayISO() + '.csv', '\ufeff' + rows.map(r => r.map(csvEscape).join(',')).join('\n'), 'text/csv;charset=utf-8');
+    rows.push(['姓名','年級','科目','聯絡方式','預設地點','收費','狀態','備註','練習量','作業品質','獨立解題','大考穩定','概念理解','題意理解','專注度','信心態度','風險','教學方向','更新時間']);
+    data.students.forEach(s => { const sc=s.assessment||{}; rows.push([s.name,s.grade,s.subject,s.contact,s.location,s.rate,s.status,s.note,sc.practice,sc.homework,sc.independent,sc.exam,sc.concept,sc.reading,sc.focus,sc.confidence,sc.risk,sc.plan,s.updatedAt]); });
+    downloadText('學生資料與量表_' + todayISO() + '.csv', '\ufeff' + rows.map(r => r.map(csvEscape).join(',')).join('\n'), 'text/csv;charset=utf-8');
   } else {
-    rows.push(['學生','日期','開始','結束','狀態','地點','理解程度','作業完成','專注度','上課內容','學生狀況','下次追蹤','更新時間']);
-    data.lessons.forEach(l => rows.push([studentName(l.studentId),l.date,l.start,l.end,l.status,l.location,l.understanding,l.homework,l.focus,l.content,l.condition,l.next,l.updatedAt]));
+    rows.push(['學生','日期','開始','結束','狀態','類型','地點','提醒','理解程度','作業完成','專注度','上課內容','學生狀況','下次追蹤','更新時間']);
+    data.lessons.forEach(l => rows.push([studentName(l.studentId),l.date,l.start,l.end,l.status,l.type,l.location,reminderText(l.reminder),l.understanding,l.homework,l.focus,l.content,l.condition,l.next,l.updatedAt]));
     downloadText('課程紀錄_' + todayISO() + '.csv', '\ufeff' + rows.map(r => r.map(csvEscape).join(',')).join('\n'), 'text/csv;charset=utf-8');
   }
 }
 function importJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+  const file = event.target.files[0]; if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const incoming = JSON.parse(e.target.result);
-      if (!Array.isArray(incoming.students) || !Array.isArray(incoming.lessons)) throw new Error('格式錯誤');
-      if (!confirm('匯入會覆蓋目前資料，確定嗎？')) return;
-      data = { students: incoming.students, lessons: incoming.lessons };
-      saveData(); renderAll(); alert('匯入完成。');
-    } catch (err) { alert('匯入失敗，請確認是本程式匯出的 JSON 備份。'); }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
+  reader.onload = e => { try { const incoming = JSON.parse(e.target.result); if (!Array.isArray(incoming.students) || !Array.isArray(incoming.lessons)) throw new Error('格式錯誤'); if (!confirm('匯入會覆蓋目前資料，確定嗎？')) return; data = { students: incoming.students, lessons: incoming.lessons }; saveData(); renderAll(); alert('匯入完成。'); } catch (err) { alert('匯入失敗，請確認是本程式匯出的 JSON 備份。'); } };
+  reader.readAsText(file); event.target.value = '';
 }
-function clearAllData() {
-  if (!confirm('確定清除全部資料嗎？此動作無法復原。建議先匯出備份。')) return;
-  data = { students: [], lessons: [] };
-  saveData(); resetStudentForm(); resetLessonForm(); renderAll();
+function clearAllData() { if (!confirm('確定清除全部資料嗎？此動作無法復原。建議先匯出備份。')) return; data = { students: [], lessons: [] }; saveData(); resetStudentForm(); resetLessonForm(); renderAll(); }
+
+function icsDate(date, time) { return date.replace(/-/g,'') + 'T' + time.replace(':','') + '00'; }
+function icsEscape(text='') { return String(text).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;'); }
+function lessonToEvent(l) {
+  const s = studentById(l.studentId) || {};
+  const desc = [`狀態：${l.status || ''}`, `類型：${l.type || ''}`, l.content ? `內容：${l.content}` : '', l.condition ? `狀況：${l.condition}` : '', l.next ? `追蹤：${l.next}` : ''].filter(Boolean).join('\n');
+  const lines = ['BEGIN:VEVENT', `UID:${icsEscape(l.id)}@tutor-scheduler-app`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'')}`, `DTSTART;TZID=Asia/Taipei:${icsDate(l.date,l.start)}`, `DTEND;TZID=Asia/Taipei:${icsDate(l.date,l.end)}`, `SUMMARY:${icsEscape('家教｜' + studentName(l.studentId) + (s.subject ? '｜' + s.subject : ''))}`, `LOCATION:${icsEscape(l.location || '')}`, `DESCRIPTION:${icsEscape(desc)}`];
+  const mins = Number(l.reminder || 0);
+  if (mins > 0) lines.push('BEGIN:VALARM', `TRIGGER:-PT${mins}M`, 'ACTION:DISPLAY', `DESCRIPTION:${icsEscape('家教提醒：' + studentName(l.studentId))}`, 'END:VALARM');
+  lines.push('END:VEVENT');
+  return lines.join('\r\n');
+}
+function exportICS(lessons, filename='家教課程.ics') {
+  if (!lessons.length) return alert('沒有可以加入行事曆的課程。');
+  const content = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Tutor Scheduler App//ZH-TW','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:家教排課','X-WR-TIMEZONE:Asia/Taipei', ...lessons.map(lessonToEvent), 'END:VCALENDAR'].join('\r\n');
+  downloadText(filename, content, 'text/calendar;charset=utf-8');
+}
+function exportICSById(id) { const l = data.lessons.find(x => x.id === id); if (l) exportICS([l], `家教_${studentName(l.studentId)}_${l.date}.ics`); }
+function exportICSUpcoming() { const now = Date.now(); const rows = data.lessons.filter(l => l.status === '已排課' && getTimeValue(l.date,l.start) >= now).sort((a,b) => (a.date+a.start).localeCompare(b.date+b.start)); exportICS(rows, '家教未來課程_' + todayISO() + '.ics'); }
+function exportICSWeek() { exportICS(lessonsForWeek().filter(l => l.status !== '請假 / 取消'), '家教本週課程_' + todayISO() + '.ics'); }
+
+function printPDF(kind) {
+  let title = '', html = '';
+  if (kind === 'students') {
+    title = '學生資料與量表';
+    const rows = data.students.sort((a,b)=>(a.name||'').localeCompare(b.name||'', 'zh-Hant'));
+    html = rows.length ? rows.map(s => { const sc=s.assessment||{}; return `<section class="block"><h2>${escapeHTML(s.name)} <small>${escapeHTML(s.grade||'')} ${escapeHTML(s.subject||'')}</small></h2><p>狀態：${escapeHTML(s.status||'')}｜地點：${escapeHTML(s.location||'')}｜聯絡：${escapeHTML(s.contact||'')}</p><p>備註：${escapeHTML(s.note||'')}</p><table><tr><th>項目</th><th>評量</th></tr>${Object.keys(SCALE_LABELS).map(k => `<tr><td>${SCALE_LABELS[k]}</td><td>${escapeHTML(sc[k]||'未填')}</td></tr>`).join('')}<tr><td>整體風險</td><td>${escapeHTML(sc.risk||'穩定')}</td></tr><tr><td>教學方向</td><td>${escapeHTML(sc.plan||'').replace(/\n/g,'<br>')}</td></tr></table></section>`; }).join('') : '<p>沒有學生資料。</p>';
+  } else if (kind === 'lessons') {
+    title = '課程紀錄';
+    const rows = filteredLessonsForList();
+    html = rows.length ? `<table><tr><th>學生</th><th>時間</th><th>狀態</th><th>地點</th><th>上課狀況</th><th>內容 / 追蹤</th></tr>${rows.map(l => `<tr><td>${escapeHTML(studentName(l.studentId))}</td><td>${escapeHTML(l.date)}<br>${escapeHTML(l.start)}-${escapeHTML(l.end)}</td><td>${escapeHTML(l.status)}<br>${escapeHTML(l.type||'')}</td><td>${escapeHTML(l.location||'')}</td><td>理解：${escapeHTML(l.understanding||'')}<br>作業：${escapeHTML(l.homework||'')}<br>專注：${escapeHTML(l.focus||'')}</td><td>${escapeHTML(l.content||'').replace(/\n/g,'<br>')}<br>${escapeHTML(l.condition||'').replace(/\n/g,'<br>')}<br>${escapeHTML(l.next||'').replace(/\n/g,'<br>')}</td></tr>`).join('')}</table>` : '<p>沒有課程紀錄。</p>';
+  } else if (kind === 'scale') {
+    title = '學生量表總覽';
+    const rows = data.students.sort((a,b)=>(a.assessment?.risk||'').localeCompare(b.assessment?.risk||'') || (a.name||'').localeCompare(b.name||'', 'zh-Hant'));
+    html = rows.length ? `<table><tr><th>學生</th><th>練習 / 作業</th><th>解題 / 大考</th><th>概念 / 題意</th><th>專注 / 信心</th><th>風險與方向</th></tr>${rows.map(s => { const sc=s.assessment||{}; return `<tr><td>${escapeHTML(s.name)}<br>${escapeHTML(s.grade||'')} ${escapeHTML(s.subject||'')}</td><td>${escapeHTML(sc.practice||'未填')}<br>${escapeHTML(sc.homework||'未填')}</td><td>${escapeHTML(sc.independent||'未填')}<br>${escapeHTML(sc.exam||'未填')}</td><td>${escapeHTML(sc.concept||'未填')}<br>${escapeHTML(sc.reading||'未填')}</td><td>${escapeHTML(sc.focus||'未填')}<br>${escapeHTML(sc.confidence||'未填')}</td><td>${escapeHTML(sc.risk||'穩定')}<br>${escapeHTML(sc.plan||'').replace(/\n/g,'<br>')}</td></tr>`; }).join('')}</table>` : '<p>沒有學生量表。</p>';
+  } else if (kind === 'schedule') {
+    title = '一週排程表';
+    const start = getWeekStartDate();
+    const rows = lessonsForWeek();
+    html = `<p>範圍：${dateISO(start)} ～ ${dateISO(addDays(start,6))}</p>` + (rows.length ? `<table><tr><th>日期</th><th>時間</th><th>學生</th><th>類型</th><th>地點</th><th>狀態</th></tr>${rows.map(l => `<tr><td>${escapeHTML(l.date)}</td><td>${escapeHTML(l.start)}-${escapeHTML(l.end)}</td><td>${escapeHTML(studentName(l.studentId))}</td><td>${escapeHTML(l.type||'')}</td><td>${escapeHTML(l.location||'')}</td><td>${escapeHTML(l.status||'')}</td></tr>`).join('')}</table>` : '<p>本週沒有課程。</p>');
+  } else if (kind === 'monthSchedule') {
+    title = '月排程表';
+    const month = getMonthValue();
+    const rows = lessonsForMonth();
+    html = `<p>範圍：${escapeHTML(month)}｜共 ${rows.length} 堂課</p>` + (rows.length ? `<table><tr><th>日期</th><th>時間</th><th>學生</th><th>類型</th><th>地點</th><th>狀態</th></tr>${rows.map(l => `<tr><td>${escapeHTML(l.date)}</td><td>${escapeHTML(l.start)}-${escapeHTML(l.end)}</td><td>${escapeHTML(studentName(l.studentId))}</td><td>${escapeHTML(l.type||'')}</td><td>${escapeHTML(l.location||'')}</td><td>${escapeHTML(l.status||'')}</td></tr>`).join('')}</table>` : '<p>本月沒有課程。</p>');
+  }
+  const w = window.open('', '_blank');
+  if (!w) return alert('瀏覽器阻擋新視窗。請允許彈出視窗，或改用電腦瀏覽器匯出。');
+  w.document.write(`<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title}</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;padding:24px;line-height:1.55;color:#222}h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:18px 0 6px}.meta{color:#777;margin-bottom:18px}.block{break-inside:avoid;margin-bottom:20px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #ddd;padding:8px;vertical-align:top;font-size:13px}th{background:#f3eee8}@media print{button{display:none}}</style></head><body><button onclick="window.print()" style="padding:10px 14px;border:0;border-radius:999px;background:#8a6f55;color:#fff;margin-bottom:16px">列印 / 儲存成 PDF</button><h1>${title}</h1><div class="meta">匯出日期：${todayISO()}｜家教排課 App</div>${html}<script>setTimeout(()=>window.print(),300)<\/script></body></html>`);
+  w.document.close();
 }
 
 // init
+initScaleSelects();
 if (!document.getElementById('filterMonth').value) document.getElementById('filterMonth').value = currentMonth();
+setThisWeek();
+setThisMonth();
+resetStudentForm();
 resetLessonForm();
 renderAll();
 </script>
